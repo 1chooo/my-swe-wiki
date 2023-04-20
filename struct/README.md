@@ -1,0 +1,1 @@
+https://learn.microsoft.com/zh-tw/cpp/cpp/initializing-classes-and-structs-without-constructors-cpp?view=msvc-170
