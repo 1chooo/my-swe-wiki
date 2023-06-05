@@ -1,10 +1,3 @@
-/*
-Practice 13
-Name: 賴力霆
-Student Number: 109601004
-Course 2022-CE1003-B
-*/
-
 #include <iostream>
 #include <cstdlib>
 

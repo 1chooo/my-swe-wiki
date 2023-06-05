@@ -1,10 +1,3 @@
-/*
-Assignment 13
-Name: 賴力霆
-Student Number: 109601004
-Course 2022-CE1001-B
-*/
-
 #include <iostream>
 #include <string>
 #include <vector>

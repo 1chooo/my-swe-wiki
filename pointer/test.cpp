@@ -1,3 +1,7 @@
+#include <iostream>
+#include <cstdlib>
+#include <cstdio>
+
 void pass_by_value(int *p)
 {
   // Allocate memory for int and store the address in p

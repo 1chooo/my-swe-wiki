@@ -4,78 +4,78 @@
 #include <random>
 #include <time.h>
 
-#define cardsnumber 52 //表總牌數
-#define suitnumber 13  //表單種花色牌數
-#define players 4      //玩家應該數量
+#define cardsnumber 52 // 表總牌數
+#define suitnumber 13  // 表單種花色牌數
+#define players 4      // 玩家應該數量
 
-bool playerstatus[4] = {0, 0, 0, 0};  //0表電腦玩家,1表人類玩家
-bool playercanplay[4] = {1, 1, 1, 1}; //0表此輪不能玩(因為已經過牌),1表可以
-int cardstable[cardsnumber] = {0};    //每張牌的分配狀態(0-51)(0-4,0為廢牌區)(梅花、方塊、紅心、黑桃)
-int handstatus[players + 1] = {0};    //每位玩家的持牌數量(0-4,0為廢牌區)
-int playernow = 0, winner = 0;        //目前玩家編號(輪轉順序：從小到大)
-int number, counter = 0;              //人類玩家數量，過牌次數
-int inputcards[6] = {0};              //出牌內容
-int suitnum = 0, suitvalue = -1;      //出牌牌型，出牌大小(價值)(-1表第一位)
-int presuitnum = 0, presuitvalue = 0; //前一次出牌牌型，出牌大小(價值)(-1表第一位)
+bool playerstatus[4] = {0, 0, 0, 0};  // 0表電腦玩家,1表人類玩家
+bool playercanplay[4] = {1, 1, 1, 1}; // 0表此輪不能玩(因為已經過牌),1表可以
+int cardstable[cardsnumber] = {0};    // 每張牌的分配狀態(0-51)(0-4,0為廢牌區)(梅花、方塊、紅心、黑桃)
+int handstatus[players + 1] = {0};    // 每位玩家的持牌數量(0-4,0為廢牌區)
+int playernow = 0, winner = 0;        // 目前玩家編號(輪轉順序：從小到大)
+int number, counter = 0;              // 人類玩家數量，過牌次數
+int inputcards[6] = {0};              // 出牌內容
+int suitnum = 0, suitvalue = -1;      // 出牌牌型，出牌大小(價值)(-1表第一位)
+int presuitnum = 0, presuitvalue = 0; // 前一次出牌牌型，出牌大小(價值)(-1表第一位)
 
-void printhandstatus(int n);                         //輸出所有牌的狀態
-bool checkhavingcards(int numberofcard, int player); //輸出是否擁有這些牌
-int checklegalcards(int numberofcard);               //輸出牌型
-bool checklargercards(int numberofcard);             //檢查是否較大
-int algfindingcards(int player);                     //電腦玩家決定出牌
+void printhandstatus(int n);                         // 輸出所有牌的狀態
+bool checkhavingcards(int numberofcard, int player); // 輸出是否擁有這些牌
+int checklegalcards(int numberofcard);               // 輸出牌型
+bool checklargercards(int numberofcard);             // 檢查是否較大
+int algfindingcards(int player);                     // 電腦玩家決定出牌
 
 int main()
 {
-    std::default_random_engine generator(time(NULL));            //建立亂樹種子
-    std::uniform_int_distribution<int> distribution(1, players); //亂數分布
+    std::default_random_engine generator(time(NULL));            // 建立亂樹種子
+    std::uniform_int_distribution<int> distribution(1, players); // 亂數分布
 
     for (int i = 0; i < cardsnumber; i++)
     {
-        int cardplayer = distribution(generator); //將每張牌分給每位玩家
+        int cardplayer = distribution(generator); // 將每張牌分給每位玩家
         if (handstatus[cardplayer] < cardsnumber / players)
         {
             cardstable[i] = cardplayer;
-            handstatus[cardplayer] += 1; //紀錄玩家持牌數量
+            handstatus[cardplayer] += 1; // 紀錄玩家持牌數量
             if (i == 2)
             {
-                playernow = cardplayer; //紀錄梅花3分配給誰
+                playernow = cardplayer; // 紀錄梅花3分配給誰
             }
         }
         else
         {
-            i -= 1; //若持牌數量太多，重新分配此張牌
+            i -= 1; // 若持牌數量太多，重新分配此張牌
         }
     }
 
     printf("Please input the number of human player.\n");
-    scanf("%d", &number); //輸入人類玩家數量
+    scanf("%d", &number); // 輸入人類玩家數量
     if (number > players)
     {
-        number = players; //避免輸入錯誤
+        number = players; // 避免輸入錯誤
     }
     for (int i = 0; i < number; i++)
     {
-        playerstatus[i] = 1; //設定人類玩家
+        playerstatus[i] = 1; // 設定人類玩家
     }
 
     printf("Game start.\n");
 
-    while (winner == 0) //若有贏家就結束遊戲
+    while (winner == 0) // 若有贏家就結束遊戲
     {
-        if (handstatus[playernow] == 0) //確保playernow在範圍內，且playernow的手牌不為0
+        if (handstatus[playernow] == 0) // 確保playernow在範圍內，且playernow的手牌不為0
         {
             playernow += 1;
             playernow = (playernow - 1) % players + 1;
         }
 
-        if (playerstatus[playernow - 1] == 1) //若playernow是人類玩家
+        if (playerstatus[playernow - 1] == 1) // 若playernow是人類玩家
         {
-            int check = 0; //紀錄牌型是否正確與合法
+            int check = 0; // 紀錄牌型是否正確與合法
             while (check == 0 && winner == 0)
             {
                 for (int i = 0; i < 6; i++)
                 {
-                    inputcards[i] = 0; //清空出牌佔態
+                    inputcards[i] = 0; // 清空出牌佔態
                 }
                 if (playercanplay[playernow - 1] == 0)
                 {
@@ -83,10 +83,10 @@ int main()
                     check = 1;
                     playernow += 1;
                     playernow = (playernow - 1) % players + 1;
-                    counter += 1; //紀錄過牌人數
+                    counter += 1; // 紀錄過牌人數
                     if (counter == players - 1)
                     {
-                        suitnum = 0; //清空判斷之佔態
+                        suitnum = 0; // 清空判斷之佔態
                         suitvalue = 0;
                         presuitnum = 0;
                         presuitvalue = 0;
@@ -102,19 +102,19 @@ int main()
                 printhandstatus(-playernow);
                 printf("\nPlease input the cards you want to play out.(end with -1)\n");
                 printf("player now : %d\n", playernow);
-                int tmp, idx = 0; //idx表輸入牌數
+                int tmp, idx = 0; // idx表輸入牌數
                 do
                 {
                     scanf("%d", &tmp);
                     inputcards[idx] = tmp;
                     idx += 1;
-                } while (tmp != -1); //接收玩家輸入牌型
+                } while (tmp != -1); // 接收玩家輸入牌型
                 idx -= 1;
-                if (idx == 0) //若是不出牌(過牌)
+                if (idx == 0) // 若是不出牌(過牌)
                 {
                     if (presuitnum == 0 && presuitvalue == 0)
                     {
-                        //do nothing
+                        // do nothing
                     }
                     else
                     {
@@ -123,10 +123,10 @@ int main()
                         check = 1;
                         playernow += 1;
                         playernow = (playernow - 1) % players + 1;
-                        counter += 1; //紀錄過牌人數
+                        counter += 1; // 紀錄過牌人數
                         if (counter == players - 1)
                         {
-                            suitnum = 0; //清空判斷之佔態
+                            suitnum = 0; // 清空判斷之佔態
                             suitvalue = 0;
                             presuitnum = 0;
                             presuitvalue = 0;
@@ -142,8 +142,8 @@ int main()
                 else
                 {
                     counter = 0;
-                    printhandstatus(idx);                     //輸出打出的牌
-                    check = checkhavingcards(idx, playernow); //檢查是否有牌
+                    printhandstatus(idx);                     // 輸出打出的牌
+                    check = checkhavingcards(idx, playernow); // 檢查是否有牌
                     if (check == 0)
                     {
                         printf("Some cards you don't have.\n");
@@ -155,13 +155,13 @@ int main()
                         {
                             for (int j = i + 1; j < idx; j++)
                             {
-                                if (inputcards[j - 1] > inputcards[j]) //排序
+                                if (inputcards[j - 1] > inputcards[j]) // 排序
                                 {
                                     int tmptmp = inputcards[j - 1];
                                     inputcards[j - 1] = inputcards[j];
                                     inputcards[j] = tmptmp;
                                 }
-                                else if (inputcards[i] == inputcards[j]) //確定無重複
+                                else if (inputcards[i] == inputcards[j]) // 確定無重複
                                 {
                                     check = 0;
                                 }
@@ -174,7 +174,7 @@ int main()
                         }
                         else
                         {
-                            check = check * checklegalcards(idx); //檢查是否合法
+                            check = check * checklegalcards(idx); // 檢查是否合法
                             if (check == 0)
                             {
                                 printf("Input not legal.\n");
@@ -182,7 +182,7 @@ int main()
                             }
                             else
                             {
-                                check = check * checklargercards(idx); //檢查是否比較大
+                                check = check * checklargercards(idx); // 檢查是否比較大
                                 if (check == 0)
                                 {
                                     printf("Input not larger.\n");
@@ -190,8 +190,8 @@ int main()
                                 }
                                 else
                                 {
-                                    handstatus[playernow] -= idx;   //減少手牌數量
-                                    if (handstatus[playernow] == 0) //檢查是否有人贏了
+                                    handstatus[playernow] -= idx;   // 減少手牌數量
+                                    if (handstatus[playernow] == 0) // 檢查是否有人贏了
                                     {
                                         winner = playernow;
                                         printf("The winner is : %d\n", winner);
@@ -199,12 +199,12 @@ int main()
                                     }
                                     for (int i = 0; i < idx; i++)
                                     {
-                                        cardstable[inputcards[i]] = 0; //設定出牌狀態
+                                        cardstable[inputcards[i]] = 0; // 設定出牌狀態
                                     }
                                     presuitnum = suitnum;
-                                    presuitvalue = suitvalue; //設定出牌牌型與大小
+                                    presuitvalue = suitvalue; // 設定出牌牌型與大小
                                     playernow += 1;
-                                    playernow = (playernow - 1) % players + 1; //設定下一位玩家
+                                    playernow = (playernow - 1) % players + 1; // 設定下一位玩家
                                 }
                             }
                         }
@@ -220,10 +220,10 @@ int main()
                 printf("\ncomputer player %d had checked this round.\n\n", playernow);
                 playernow += 1;
                 playernow = (playernow - 1) % players + 1;
-                counter += 1; //紀錄過牌人數
+                counter += 1; // 紀錄過牌人數
                 if (counter == players - 1)
                 {
-                    suitnum = 0; //清空判斷之佔態
+                    suitnum = 0; // 清空判斷之佔態
                     suitvalue = 0;
                     presuitnum = 0;
                     presuitvalue = 0;
@@ -241,7 +241,7 @@ int main()
                 printf("player now : %d\n", playernow);
                 for (int i = 0; i < 6; i++)
                 {
-                    inputcards[i] = 0; //清空出牌佔態
+                    inputcards[i] = 0; // 清空出牌佔態
                 }
                 idx = algfindingcards(playernow);
                 if (idx == 0)
@@ -249,11 +249,11 @@ int main()
                     printf("Player %d check.\n\n", playernow);
                     playercanplay[playernow - 1] = 0;
                     playernow += 1;
-                    playernow = (playernow - 1) % players + 1; //設定下一位玩家
-                    counter += 1;                              //紀錄過牌人數
+                    playernow = (playernow - 1) % players + 1; // 設定下一位玩家
+                    counter += 1;                              // 紀錄過牌人數
                     if (counter == players - 1)
                     {
-                        suitnum = 0; //清空判斷之佔態
+                        suitnum = 0; // 清空判斷之佔態
                         suitvalue = 0;
                         presuitnum = 0;
                         presuitvalue = 0;
@@ -268,9 +268,9 @@ int main()
                 else
                 {
                     counter = 0;
-                    printhandstatus(idx);           //輸出打出的牌
-                    handstatus[playernow] -= idx;   //減少手牌數量
-                    if (handstatus[playernow] == 0) //檢查是否有人贏了
+                    printhandstatus(idx);           // 輸出打出的牌
+                    handstatus[playernow] -= idx;   // 減少手牌數量
+                    if (handstatus[playernow] == 0) // 檢查是否有人贏了
                     {
                         winner = playernow;
                         printf("The winner is : %d\n", winner);
@@ -278,12 +278,12 @@ int main()
                     }
                     for (int i = 0; i < idx; i++)
                     {
-                        cardstable[inputcards[i]] = 0; //設定出牌狀態
+                        cardstable[inputcards[i]] = 0; // 設定出牌狀態
                     }
                     presuitnum = suitnum;
-                    presuitvalue = suitvalue; //設定出牌牌型與大小
+                    presuitvalue = suitvalue; // 設定出牌牌型與大小
                     playernow += 1;
-                    playernow = (playernow - 1) % players + 1; //設定下一位玩家
+                    playernow = (playernow - 1) % players + 1; // 設定下一位玩家
                 }
             }
         }
@@ -292,11 +292,11 @@ int main()
     return 0;
 }
 
-//輸出是否擁有這些牌
+// 輸出是否擁有這些牌
 bool checkhavingcards(int numberofcard, int player)
 {
     bool checking;
-    if (suitvalue == -1) //若此輪為第一輪
+    if (suitvalue == -1) // 若此輪為第一輪
     {
         checking = 0;
     }
@@ -312,7 +312,7 @@ bool checkhavingcards(int numberofcard, int player)
         }
         if (suitvalue == -1 && checking == 0 && inputcards[i] == 2)
         {
-            checking = 1; //檢查必須出梅花3
+            checking = 1; // 檢查必須出梅花3
         }
     }
     if (checking == 0 && suitvalue == -1)
@@ -322,14 +322,14 @@ bool checkhavingcards(int numberofcard, int player)
     return 1;
 }
 
-//輸出牌型(0表不存在,1表單張,2表對子,3表順子,4表葫蘆,5表鐵支,6表同花順)
+// 輸出牌型(0表不存在,1表單張,2表對子,3表順子,4表葫蘆,5表鐵支,6表同花順)
 int checklegalcards(int numberofcard)
 {
     if (numberofcard == 1)
     {
         suitnum = 1;
         suitvalue = inputcards[0];
-        return 1; //單張
+        return 1; // 單張
     }
     else if (numberofcard == 2)
     {
@@ -343,18 +343,18 @@ int checklegalcards(int numberofcard)
         {
             suitnum = 2;
             suitvalue = inputcards[1];
-            return 2; //對子
+            return 2; // 對子
         }
     }
     else if (numberofcard == 5)
     {
         int tmp[5], tmpsuit[5];
-        for (int i = 0; i < numberofcard; i++) //前處裡，取出資料
+        for (int i = 0; i < numberofcard; i++) // 前處裡，取出資料
         {
             tmp[i] = inputcards[i] % suitnumber;
             tmpsuit[i] = inputcards[i] / suitnumber;
         }
-        for (int i = 0; i < numberofcard - 1; i++) //將取出的資料排序
+        for (int i = 0; i < numberofcard - 1; i++) // 將取出的資料排序
         {
             for (int j = i + 1; j < numberofcard; j++)
             {
@@ -369,8 +369,8 @@ int checklegalcards(int numberofcard)
                 }
             }
         }
-        int tmpcounter = 0, idx;               //前變數表計數
-        for (int i = 0; i < numberofcard; i++) //取出特徵值
+        int tmpcounter = 0, idx;               // 前變數表計數
+        for (int i = 0; i < numberofcard; i++) // 取出特徵值
         {
             if (tmp[i] == tmp[2])
             {
@@ -385,7 +385,7 @@ int checklegalcards(int numberofcard)
         {
             suitnum = 5;
             suitvalue = tmpsuit[2] * suitnumber + tmp[2];
-            return 5; //鐵支
+            return 5; // 鐵支
         }
         else if (tmpcounter == 3)
         {
@@ -395,7 +395,7 @@ int checklegalcards(int numberofcard)
                 {
                     suitnum = 4;
                     suitvalue = tmpsuit[2] * suitnumber + tmp[2];
-                    return 4; //葫蘆
+                    return 4; // 葫蘆
                 }
             }
             else if (idx == 4)
@@ -404,29 +404,29 @@ int checklegalcards(int numberofcard)
                 {
                     suitnum = 4;
                     suitvalue = tmpsuit[2] * suitnumber + tmp[2];
-                    return 4; //葫蘆
+                    return 4; // 葫蘆
                 }
             }
         }
         bool tmpcheck1 = 1;
         for (int i = 2; i < numberofcard; i++)
         {
-            if (tmp[i] - tmp[1] != i - 1) //判斷順子結構
+            if (tmp[i] - tmp[1] != i - 1) // 判斷順子結構
             {
                 suitnum = 0;
                 suitvalue = 0;
                 return 0;
             }
-            if (tmpsuit[0] != tmpsuit[i] && tmpcheck1 == 1) //判斷同花順
+            if (tmpsuit[0] != tmpsuit[i] && tmpcheck1 == 1) // 判斷同花順
             {
                 tmpcheck1 = 0;
             }
         }
-        if (tmpsuit[0] != tmpsuit[1] && tmpcheck1 == 1) //判斷同花順
+        if (tmpsuit[0] != tmpsuit[1] && tmpcheck1 == 1) // 判斷同花順
         {
             tmpcheck1 = 0;
         }
-        if (tmp[1] - tmp[0] == 1) //其他
+        if (tmp[1] - tmp[0] == 1) // 其他
         {
             if (tmp[0] == 1)
             {
@@ -439,27 +439,27 @@ int checklegalcards(int numberofcard)
             if (tmpcheck1 == 0)
             {
                 suitnum = 3;
-                return 3; //順子
+                return 3; // 順子
             }
             else
             {
                 suitnum = 6;
-                return 6; //同花順
+                return 6; // 同花順
             }
         }
-        else if (tmp[0] == 0 && tmp[1] == 9) //10 J Q K A
+        else if (tmp[0] == 0 && tmp[1] == 9) // 10 J Q K A
         {
             if (tmpcheck1 == 0)
             {
                 suitnum = 3;
                 suitvalue = tmpsuit[0] * suitnumber + tmp[0];
-                return 3; //順子
+                return 3; // 順子
             }
             else
             {
                 suitnum = 6;
                 suitvalue = tmpsuit[0] * suitnumber + tmp[0];
-                return 6; //同花順
+                return 6; // 同花順
             }
         }
         else
@@ -469,13 +469,13 @@ int checklegalcards(int numberofcard)
             return 0;
         }
     }
-    else //不合法的出牌數量
+    else // 不合法的出牌數量
     {
         return 0;
     }
 }
 
-//檢查是否較大
+// 檢查是否較大
 bool checklargercards(int numberofcard)
 {
     if (suitnum > 2)
@@ -486,17 +486,17 @@ bool checklargercards(int numberofcard)
         }
         else if (suitnum == presuitnum)
         {
-            if (suitvalue == 3) //順子
+            if (suitvalue == 3) // 順子
             {
                 int tmp = suitvalue % suitnumber;
                 int pretmp = presuitvalue % suitnumber;
                 if (tmp < 2)
                 {
-                    tmp += suitnumber; //校正大小
+                    tmp += suitnumber; // 校正大小
                 }
                 if (pretmp < 2)
                 {
-                    pretmp += suitnumber; //校正大小
+                    pretmp += suitnumber; // 校正大小
                 }
                 if (tmp > pretmp)
                 {
@@ -518,17 +518,17 @@ bool checklargercards(int numberofcard)
                     return 0;
                 }
             }
-            else if (suitvalue == 4 || suitvalue == 5) //葫蘆、鐵支
+            else if (suitvalue == 4 || suitvalue == 5) // 葫蘆、鐵支
             {
                 int tmp = suitvalue % suitnumber;
                 int pretmp = presuitvalue % suitnumber;
                 if (tmp < 2)
                 {
-                    tmp += suitnumber; //校正大小
+                    tmp += suitnumber; // 校正大小
                 }
                 if (pretmp < 2)
                 {
-                    pretmp += suitnumber; //校正大小
+                    pretmp += suitnumber; // 校正大小
                 }
                 if (tmp > pretmp)
                 {
@@ -539,17 +539,17 @@ bool checklargercards(int numberofcard)
                     return 0;
                 }
             }
-            else //同花順
+            else // 同花順
             {
                 int tmp = suitvalue % suitnumber;
                 int pretmp = presuitvalue % suitnumber;
                 if (tmp < 2)
                 {
-                    tmp += suitnumber; //校正大小
+                    tmp += suitnumber; // 校正大小
                 }
                 if (pretmp < 2)
                 {
-                    pretmp += suitnumber; //校正大小
+                    pretmp += suitnumber; // 校正大小
                 }
                 if (tmp > pretmp)
                 {
@@ -572,7 +572,7 @@ bool checklargercards(int numberofcard)
                 }
             }
         }
-        else if (suitnum > 4 && presuitnum <= 4) //絕對勝利
+        else if (suitnum > 4 && presuitnum <= 4) // 絕對勝利
         {
             return 1;
         }
@@ -582,7 +582,7 @@ bool checklargercards(int numberofcard)
         }
         else
         {
-            return 0; //牌型不符
+            return 0; // 牌型不符
         }
     }
     else
@@ -593,11 +593,11 @@ bool checklargercards(int numberofcard)
             int pretmp = presuitvalue % suitnumber;
             if (tmp < 2)
             {
-                tmp += suitnumber; //校正大小
+                tmp += suitnumber; // 校正大小
             }
             if (pretmp < 2)
             {
-                pretmp += suitnumber; //校正大小
+                pretmp += suitnumber; // 校正大小
             }
             if (tmp > pretmp)
             {
@@ -630,11 +630,11 @@ bool checklargercards(int numberofcard)
     }
 }
 
-//電腦玩家決定出牌，return idx(出牌數量)
+// 電腦玩家決定出牌，return idx(出牌數量)
 int algfindingcards(int player)
 {
     int tmpcheck;
-    if (presuitnum == 1) //前玩家出單張
+    if (presuitnum == 1) // 前玩家出單張
     {
         int tmp1[13], tmpsuit1[13], idxnum = 0;
         for (int i = 0; i < cardsnumber; i++)
@@ -651,7 +651,7 @@ int algfindingcards(int player)
             tmpsuit1[idxnum] = i / suitnumber;
             idxnum += 1;
         }
-        for (int i = 0; i < idxnum - 1; i++) //將取出的資料排序
+        for (int i = 0; i < idxnum - 1; i++) // 將取出的資料排序
         {
             for (int j = 0; j < idxnum - 1 - i; j++)
             {
@@ -672,7 +672,7 @@ int algfindingcards(int player)
             {
                 tmp1[i] -= suitnumber;
             }
-            inputcards[0] = tmpsuit1[i] * suitnumber + tmp1[i]; //找出最小的牌又能出的牌
+            inputcards[0] = tmpsuit1[i] * suitnumber + tmp1[i]; // 找出最小的牌又能出的牌
             tmpcheck = checklegalcards(1);
             tmpcheck = tmpcheck * checklargercards(1);
             if (tmpcheck != 0)
@@ -682,7 +682,7 @@ int algfindingcards(int player)
         }
         return 0;
     }
-    else if (presuitnum == 2) //前玩家出對子
+    else if (presuitnum == 2) // 前玩家出對子
     {
         for (int i = 0; i < cardsnumber - 1; i++)
         {
@@ -708,7 +708,7 @@ int algfindingcards(int player)
         }
         return 0;
     }
-    else if (presuitnum >= 3) //前玩家出順子
+    else if (presuitnum >= 3) // 前玩家出順子
     {
         for (int a = 0; a < cardsnumber - 4; a++)
         {
@@ -758,9 +758,9 @@ int algfindingcards(int player)
         }
         return 0;
     }
-    else if (suitvalue == -1) //當電腦要先出時
+    else if (suitvalue == -1) // 當電腦要先出時
     {
-        //可以出五張時
+        // 可以出五張時
         for (int a = 0; a < cardsnumber - 3; a++)
         {
             if (cardstable[a] != player || a == 2)
@@ -785,7 +785,7 @@ int algfindingcards(int player)
                         {
                             continue;
                         }
-                        inputcards[0] = 2; //梅花3
+                        inputcards[0] = 2; // 梅花3
                         inputcards[1] = a;
                         inputcards[2] = b;
                         inputcards[3] = c;
@@ -800,14 +800,14 @@ int algfindingcards(int player)
                 }
             }
         }
-        //可以出對子時
+        // 可以出對子時
         for (int a = 0; a < cardsnumber; a++)
         {
             if (cardstable[a] != player || a == 2)
             {
                 continue;
             }
-            inputcards[0] = 2; //梅花3
+            inputcards[0] = 2; // 梅花3
             inputcards[1] = a;
             tmpcheck = checklegalcards(2);
             tmpcheck = tmpcheck * checklargercards(2);
@@ -816,8 +816,8 @@ int algfindingcards(int player)
                 return 2;
             }
         }
-        //只能出單張時
-        inputcards[0] = 2; //梅花3
+        // 只能出單張時
+        inputcards[0] = 2; // 梅花3
         tmpcheck = checklegalcards(1);
         tmpcheck = tmpcheck * checklargercards(1);
         if (tmpcheck != 0)
@@ -826,9 +826,9 @@ int algfindingcards(int player)
         }
         return 0;
     }
-    else if (presuitnum == 0 && presuitvalue == 0) //場上沒有牌，前三家都過
+    else if (presuitnum == 0 && presuitvalue == 0) // 場上沒有牌，前三家都過
     {
-        //可以出五張時
+        // 可以出五張時
         for (int a = 0; a < cardsnumber - 4; a++)
         {
             if (cardstable[a] != player)
@@ -875,7 +875,7 @@ int algfindingcards(int player)
                 }
             }
         }
-        //可以出對子時
+        // 可以出對子時
         for (int i = 0; i < cardsnumber - 1; i++)
         {
             if (cardstable[i] != player)
@@ -898,7 +898,7 @@ int algfindingcards(int player)
                 }
             }
         }
-        //只能出單張時
+        // 只能出單張時
         int tmp0[13], tmpsuit0[13], idxnum = 0;
         for (int i = 0; i < cardsnumber; i++)
         {
@@ -914,7 +914,7 @@ int algfindingcards(int player)
             tmpsuit0[idxnum] = i / suitnumber;
             idxnum += 1;
         }
-        for (int i = 0; i < idxnum - 1; i++) //將取出的資料排序
+        for (int i = 0; i < idxnum - 1; i++) // 將取出的資料排序
         {
             for (int j = 0; j < idxnum - 1 - i; j++)
             {
@@ -945,7 +945,7 @@ int algfindingcards(int player)
     return 0;
 }
 
-//輸出所有牌的狀態
+// 輸出所有牌的狀態
 void printhandstatus(int num)
 {
     if (num == 0)
