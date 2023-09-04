@@ -1,4 +1,4 @@
-# My C WIKI
+# My SWE WIKI
 
 ### License
 Released under [MIT](./LICENSE) by [@1chooo](https://github.com/1chooo).
