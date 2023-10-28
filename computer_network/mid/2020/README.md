@@ -7,12 +7,13 @@ The queueing delay is an illustration of four sourcess of packet delay.
 
    ![](./q1.png)
 
-    1. Transmitting Delay
-    2. Propogation Delay
-    3. Queueing Delay
-    4. Nodal Processing Delay
+**Answer:**
+1. Transmitting Delay
+2. Propogation Delay
+3. Queueing Delay
+4. Nodal Processing Delay
 
-    - Queueing Delay
+- Queueing Delay
 
 ### Q2
 Please answer the following questions.
