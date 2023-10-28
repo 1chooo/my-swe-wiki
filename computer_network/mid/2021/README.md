@@ -96,8 +96,12 @@ Q: Suppose Host A wants to send a larfe file to Host B. The path from Host A to 
 ### Q14
 Q: The picture below is part of rdt 3.0 finite state machine, fill in th blank below, please write down your answer on the answer sheet. (3 marks for each a, b, c, d, e.)
 
+![](./q14_2.png)
+
 **Hint:**
 - The main change from rdt 1.0 to 2.9: ACK, checksum.
 - The main change from rdt 2.0 to 3.0: Timer.
 
-![](./q14_2.png)
+**Answer:**
+
+
