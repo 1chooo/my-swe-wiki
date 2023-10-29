@@ -180,7 +180,7 @@ $D_{P2P} = max\{ \frac{F}{u_S}, \frac{F}{d_{min}}, \frac{NF}{u_S + \sum_{i=1}^{n
 其中 M 要帶 $10^6$ 或 $2^{20}$ 都可以。
 
 ### Q14
-(6 marks) Assume a propagation speed of $2 * 10^8 metes/sec$. We have 10 packets. A router processing time is $1 ms$. Suppose the packet travels $2000 km$, beginning in front of one router, passing through a second router, and finishing just after a third router. What is the end-to-end delay?
+(6 marks) Assume a propagation speed of $2 \times 10^8 metes/sec$. We have 10 packets. A router processing time is $1 ms$. Suppose the packet travels $2000 km$, beginning in front of one router, passing through a second router, and finishing just after a third router. What is the end-to-end delay?
 
 **Answer:**
 
