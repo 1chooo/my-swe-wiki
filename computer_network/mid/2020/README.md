@@ -58,7 +58,7 @@ A message has been sent from source to destination passed by a switch and a rout
 **Answer:**
 - Layer1: Message
 - Layer2: Frame
-- Layer3: DaaGram
+- Layer3: DataGram
 - Layer4: Segment
 
 <br>
