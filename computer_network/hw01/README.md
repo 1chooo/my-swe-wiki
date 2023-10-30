@@ -12,10 +12,16 @@ True or false? (10%) [[Reference]](https://quizlet.com/173544792/cis3210-true-or
 **Answer:**
 
 - F 
+  - In nonpersistent connection, every element needs its own request to be sent.
 - T 
+  - Persistent connect is approached by TCP, and TCP may still open for another web page.
 - F 
+  - TCP closes once one HTTP request achieved, and will open for next HTTP request.
+  - Nonpersistent: TCP closes once one object request achieved. (Not to mention HTTP request)
 - F 
+  - It’s used to make proxy knows that if it should request new message.
 - F
+  - Requests fetching resources, like GET, HEAD, DELETE, or OPTIONS, usually don’t need message body.
 
 ### Q2.
 What are the five layers in the Internet protocol stack? (10%)
@@ -106,10 +112,10 @@ What default port numbers are used by the application protocols **HTTP, FTP, DNS
 
 **Answer:**
 
-- HTTP: 80
-- FTP: 20, 21
-- DNS: 53
-- SMTP: 25
+- HTTP(Hypertext Transport Protocol): 80
+- FTP(File Transport Protocol): 20, 21
+- DNS(Domain Name System): 53
+- SMTP(Simple Mail Transfer Protocol): 25
 
 
 ### Q9.
