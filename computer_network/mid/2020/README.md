@@ -87,13 +87,18 @@ $R \times d_{prop} = 100 \times 2^{20} \times 0.0625 = 6553600 (bits)$
 
 ![](./q6.png)
 
+- iterated query: 被聯絡的 DNS server 負責回答你可以去聯絡哪個 server
+- recursive query: 被聯絡的 DNS server 負責幫你去聯絡，並回答你 IP address
+- iterated query: 可以避免 DNS server 負擔過重，但是需要多次的 query
+- recursive query: 只需要一次 query，但是高層級的 DNS server 負擔過重
+
 
 ### Q7
 (4 marks) DNS resource record format is (name, value, type, ttl). A diferent type has the corresponding name and value which has the different meaning. What are the meanings of name and value when the types is "A" and "NS" respectively?
 
 **Answer:**
 
-- A: name = domain name, value = IP address
+- A: name = hostname, value = IP address
 - NS: name = domain, value = hostname of authoritative name server for this domain
 
 
