@@ -8,7 +8,7 @@ Sequence numbers are required for a receiver to find out whether an arriving pac
 
 In our `rdt` protocols, why did we need to introduce timers?
 
-To handle losses in the channel. If the ACK for a transmitted packet is not received within the duration of the timer for the packet, the packet (or its ACK or NACK) is assumed to have been lost. Hence, the packet is retransmitted.
+Timers were introduced to detect lost packets. If the ACK for a transmittedpacket is not received within the duration of the timer for the packet, the packet (or its ACK or NACK) is assumed to have been lost. Hence, the packet is retransmitted.
 
 ### Q2. [^1]
 
