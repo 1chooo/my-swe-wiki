@@ -4,9 +4,13 @@
 
 In our `rdt` protocols, why did we need to introduce sequence numbers?
 
+**Ans:** 
+
 Sequence numbers are required for a receiver to find out whether an arriving packet contains new data or is a retransmission.
 
 In our `rdt` protocols, why did we need to introduce timers?
+
+**Ans:** 
 
 Timers were introduced to detect lost packets. If the ACK for a transmittedpacket is not received within the duration of the timer for the packet, the packet (or its ACK or NACK) is assumed to have been lost. Hence, the packet is retransmitted.
 
@@ -20,37 +24,71 @@ True or False
 4. Suppose Host A is sending a large file to Host B over a TCP connection. If the sequence number for a segment of this connection is m, then the sequence number for the subsequent segment will necessarily be m+1.
 5. The TCP segment has a field in its header for rwnd.
 
+**Ans:**
+
+1. False.
+2. False.
+3. True.
+4. False.
+5. True.
+
 ### Q3 [^2], [^3]
 
-UDP and TCP use 1s complement for their checksums. Suppose you have the following three 8-bit bytes: 01010011, 01100110, 01110100. What is the 1s complement of the sum of these 8-bit bytes? (Note that although UDP and TCP use 16-bit words in computing the checksum, for this problem you are being asked to consider 8-bit sums.) Show all work. Why is it that UDP takes the 1s complement of the sum; that is, why not just use the sum? With the 1s complement scheme, how does the receiver detect errors? Is it possible that a 1-bit error will go undetected? How about a 2-bit error?
+UDP and TCP use 1s complement for their checksums. Suppose you have the following three 8-bit bytes: 01010011, 01100110, 01110100. 
+1. What is the 1s complement of the sum of these 8-bit bytes? (Note that although UDP and TCP use 16-bit words in computing the checksum, for this problem you are being asked to consider 8-bit sums.) Show all work. 
+2. Why is it that UDP takes the 1s complement of the sum; that is, why not just use the sum? 
+3. With the 1s complement scheme, how does the receiver detect errors? 
+4. Is it possible that a 1-bit error will go undetected? 
+5. How about a 2-bit error?
 
-![](./imgs/q3.png)
+**Ans:**
 
-Calculate the sum of the given 3 bytes.
+1. Note, wrap around if overflow
+    ```
+    0 1 0 1 0 0 1 1
+    + 0 1 1 0 0 1 1 0
+    -----------------
+    1 0 1 1 1 0 0 1
 
-Add first two bytes: 10111001
-Now add the result with the 3rd byte: 100101101
+    and then
 
-Wrap around the extra bit: 00101110
-Check sum: 11010001
+    1 0 1 1 1 0 0 1
+    + 0 1 1 1 0 1 0 0
+    -----------------
+    0 0 1 0 1 1 1 0
 
-The 1’s compliment of (sum) 00101110 is 11010001.
-
-It is clear that the 1’s compliment and the checksum are the same.
-
-User Datagram Protocol (UDP) uses the 1’s complement as it is same as the checksum of the sum.The checksum is used by the receiver to identify the errors in the segment. The receiver performs the following steps at the receiver end to identify the errors in the segment.
-
-Add all the bytes including checksum.
-Observe the sum.
-If it contains all 1’s then the segment has errors.
-If it contains 1 or more 0’s then the segment contains errors.
+    One's complement = 1 1 0 1 0 0 0 1.
+    ```
+2. To detect errors, the receiver adds the four words (the three original words and the checksum).
+3. If the sum contains a zero, the receiver knows there has been an error.
+4. All one-bit errors will be detected.
+5. Two-bit errors can be undetected (e.g., if the last digit of the first word is converted to a 0 and the last digit of the second word is converted to a 1).
 
 ### Q4 [^3]
 
 In our discussion of TCP futures in Section 3.7, we noted that to achieve a throughput of 10 Gbps, TCP could only tolerate a segment loss probability of 2 · 10 -10 (or equivalently, one loss event for every 5,000,000,000 segments). Show the derivation for the values of 2 · 10 -10 (1 out of 5,000,000) for the RTT and MSS values given in Section 3.7. If TCP needed to support a 100 Gbps connection, what would the tolerable loss be?
 
-![](imgs/q4_1.png)
-![](imgs/q4_2.png)
+**Ans:**
+
+```
+RTT = 100ms = 0.1s
+MSS = 1,000,000 bytes
+Throughput = 10 Gbps = 10,000,000,000 bits/s
+
+Throughput = MSS / RTT * (1 - Loss)
+10,000,000,000 = 1,000,000 / 0.1 * (1 - Loss)
+Loss = 0.0000000002 = 2 * 10^-10
+```
+
+```
+RTT = 100ms = 0.1s
+MSS = 1,000,000 bytes
+Throughput = 100 Gbps = 100,000,000,000 bits/s
+
+Throughput = MSS / RTT * (1 - Loss)
+100,000,000,000 = 1,000,000 / 0.1 * (1 - Loss)
+Loss = 0.00000000002 = 2 * 10^-11
+```
 
 
 ### Q5 [^4]
@@ -67,7 +105,33 @@ Consider a datagram network using 32-bit host addresses. Suppose a router has fo
 11100001 10000000 00010001 01110111
 ```
 
-![](./imgs/q5_ans.png)
+**Ans:**
+
+**a.**
+
+| Prefix Match | Link Interface |
+| :----------: | :------------: |
+| 11100000 00 | 0 |
+| 11100000 01000000 | 1 |
+| 1110000 | 2 |
+| 11100001 1   | 3 |
+| otherwise | 3 |
+
+or
+
+| Prefix Match | Link Interface |
+| :----------: | :------------: |
+| 11100000 00 | 0 |
+| 11100000 01000000 | 1 |
+| 11100000 | 2 |
+| 11100001 1 | 2 |
+| otherwise | 3 |
+
+**b.** 
+
+- Prefix match for first address is fifth entry: link interface 3
+- Prefix match for second address is third entry: link interface 2
+- Prefix match for third address is fourth entry: link interface 3
 
 ### Q6 [^4], [^5]
 
@@ -79,8 +143,16 @@ Any IP address in range 128.119.40.128 to 128.119.40.191.
 
 Suppose an ISP owns the block of addresses of the form 128.119.40.64/25. Suppose it wants to create four subnets from this block, with each block having the same number of IP addresses. What are the prefixes (of form a.b.c.d/x) for the four subnets?
 
-Four equal size subnets: 128.119.40.64/28, 128.119.40.80/28, 128.119.40.96/28,
-128.119.40.112/28.
+**Ans:**
+
+Any IP address in range 128.119.40.128 to 128.119.40.191.
+
+Four equal size subnets: 
+
+1. 128.119.40.64/28 
+2. 128.119.40.80/28 
+3. 128.119.40.96/28
+4. 128.119.40.112/28
 
 ### Q7 [^5]
 
@@ -91,7 +163,29 @@ Consider the network setup shown in the figure. Suppose that the ISP instead ass
 
 ![](./imgs/q7.png)
 
-![](./imgs/q7_ans.png)
+**Ans:**
+
+**a.**
+
+Home addresses:
+
+- 192.168.1.1
+- 192.168.1.2
+- 192.168.1.3
+- With the router interface being 192.168.1.4
+
+**b.**
+
+NAT Translation Table
+
+| WAN Side            | LAN Side         |
+| :-----------------: | :--------------: |
+| 24.34.112.235, 5000 | 192.168.1.1, 3345|
+| 24.34.112.235, 5001 | 192.168.1.1, 3346|
+| 24.34.112.235, 5002 | 192.168.1.2, 3445|
+| 24.34.112.235, 5003 | 192.168.1.2, 3446|
+| 24.34.112.235, 5004 | 192.168.1.3, 3545|
+| 24.34.112.235, 5005 | 192.168.1.3, 3546|
 
 ### Q8 [^6]
 
@@ -103,22 +197,16 @@ Consider the SDN OpenFlow network shown in Figure 4.30 . Suppose that the desire
 
 ![](./imgs/q8.png)
 
-Specify the flow table entries in s2 that implement this forwarding behavior.
+**Ans:**
 
-![](./imgs/q8_ans.png)
+S2 Flow Table
 
-***Answer:*** The s2 flow table is as followed:
-
-|                          Match                          |   Action   |
-| :-----------------------------------------------------: | :--------: |
-| Ingress Port: 1; IP Src: 10.3.\*.\*; IP Dst: 10.1.\*.\* | Forward(2) |
-| Ingress Port: 2; IP Src: 10.1.\*.\*; IP Dst: 10.3.\*.\* | Forward(1) |
-|            Ingress Port: 1; IP Dst: 10.2.0.3            | Forward(3) |
-|            Ingress Port: 2; IP Dst: 10.2.0.3            | Forward(3) |
-|   Ingress Port: 4; IP Src=10.2.0.4; IP Dst: 10.2.0.3    | Forward(3) |
-|            Ingress Port: 1; IP Dst: 10.2.0.4            | Forward(4) |
-|            Ingress Port: 2; IP Dst: 10.2.0.4            | Forward(4) |
-|   Ingress Port: 3; IP Src=10.2.0.3; IP Dst: 10.2.0.4    | Forward(4) |
+| Match | Action |
+| :---: | :----: |
+| Ingress Port = 1; IP Src = `10.3.*.*`; IP Dst = `10.1.*.*` | Forward (2) |
+| Ingress Port = 2; IP Src = `10.1.*.*`; IP Dst = `10.3.*.*`  | Forward (1) |
+| Ingress Port = 1; IP Dst = `10.2.0.3`<br>Ingress Port = 2; IP Dst = `10.2.0.3`<br>Ingress Port = 1; IP Dst = `10.2.0.4`<br>Ingress Port = 2; IP Dst = `10.2.0.4` | Forward (3)<br>Forward (3)<br>Forward (4)<br>Forward (4) |
+| Ingress Port = 4<br>Ingress Port = 3 | Forward (3)<br>Forward (4) |
 
 ### Q9 [^7], [^8], [^9]
 
@@ -129,7 +217,7 @@ Consider again the SDN OpenFlow network shown in Figure 4.30 . Suppose we want s
 - Only traffic destined to h3 is to be delivered (i.e., all traffic to h4 is blocked).
 - Only UDP traffic from h1 and destined to h3 is to be delivered. All other traffic is blocked.
 
-![](./imgs/q8.png)
+**Ans:**
 
 **Step1**  
 A flow table is a more comprehensive routing table. A flow table allows more variables to determine the outbound interface of a packet.
@@ -179,8 +267,9 @@ The table is then:
 | --- | --- |
 | Dst IP: 10.2.0.3 | Forward(3) |
 
-The fourth table:
+**Step5:**
 
+The fourth table:
 
 | Match | Action |
 | --- | --- |
@@ -190,6 +279,7 @@ The fourth table:
 
 Compare and contrast link-state and distance-vector routing algorithms.
 
+**Ans:**
 
 Link-state routing algorithms use global network information, meaning that the entire network topology and all link costs can be passed as input. Distance-vector algorithms only have access to local information communicated by neighbors, making them iterative, asynchronous, and distributed
 
