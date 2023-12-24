@@ -8,6 +8,11 @@
     - [Actions](#actions)
     - [Checksum](#checksum)
   - [3-4 Principles of Reliable Data Transfer](#3-4-principles-of-reliable-data-transfer)
+  - [4-1 Network Layer: Overview](#4-1-network-layer-overview)
+  - [4-2 What's Inside a Router?](#4-2-whats-inside-a-router)
+    - [Longest-Prefix Matching](#longest-prefix-matching)
+    - [計算 Buffering](#計算-buffering)
+  - [4-3 IP: the Internet Protocol](#4-3-ip-the-internet-protocol)
 
 
 ## 3-1 Introduction and Transport-Layer Services
@@ -144,6 +149,8 @@ Detect "errors" in transmitted segment
 
 example: add two 16-bit integers
 
+[HW2-3](https://github.com/1chooo/my-swe-wiki/tree/main/computer_network/hw02#q3-2-3)
+
 ```
   1101011010110101
 + 0110011101101101
@@ -183,3 +190,145 @@ Internet Protocol (in Network Layer) does not guarantee:
 
 
 ## 3-4 Principles of Reliable Data Transfer
+
+
+## 4-1 Network Layer: Overview
+
+```
+Application Layer
+-----------------
+Transport Layer
+-----------------
+Network Layer
+-----------------
+Data Link Layer
+-----------------
+Physical Layer
+```
+
+transport segment from sending to receiving host
+- sender: encapsulates segments into datagrams, pass to link layer
+- receiver: delivers segments to transport layer protocol
+- network layer protocols in every host, router
+- router examines header fields in all IP datagrams passing through it
+- network-layer functions:
+  - forwarding: move packets from router's input to appropriate router output
+  - routing: determine route taken by packets from source to dest.
+  - path determination: route taken by packets from source to dest.
+  - call setup: some network architectures require router call setup along path before data flows
+  - congestion control: routers may throttle senders when network congested
+
+
+## 4-2 What's Inside a Router?
+
+- Input ports: 負責 forwarding datagrams from input to output ports
+- input port queuing: 如果 datagrams 抵達速度快過魚 forward rate，就會發生 queueing delay，如果 queueing delay 太長，就會發生 packet loss
+
+### Longest-Prefix Matching 
+
+[HW2-5](https://github.com/1chooo/my-swe-wiki/tree/main/computer_network/hw02#q5-4)
+
+找最長的去配對
+
+```
+| Destination Address Range  |  Link Interface  |
+|----------------------------|------------------|
+| 11001000 00010111 00010*** ******** |        0         |
+| 11001000 00010111 00011000 ******** |        1         |
+| 11001000 00010111 00011*** ******** |        2         |
+| otherwise |        3         |
+```
+
+- 11001000 00010111 00010110 10100001 which interface? Ans: 0
+- 11001000 00010111 00011000 10101010 which interface? Ans: 2
+
+- Often done using TCAMs (ternary content addressable memories)
+- content addressable: present address to TCAM, retrieve address in one clock cycle
+- ternary: each TCAM entry has 3 parts
+  - value
+  - mask
+  - output port number
+
+
+- Switching fabrics: 傳送 packet 曾 input link 到合適的 output link
+- switching rate: rate at which packets can be transfered from inputs to outputs
+- Oftem measured as multiple of input/output line rate
+- 三個主要的 switching fabrics:
+  - memory: 第一代 routers, switch 在 CPU, packet 要複製到 system memory, 速度慢限制在記憶體 bandwidth (2 bus crossings per datagram)
+  - bus: datagram 從 input port 的 memory 到 output port 的 memory 藉由分享的 bus, 32 Gbps bus, Cisco 5600: sufficient
+  - interconnection network: crossbar, clos network, other interconnection nets developed to connect processors in multiprocessor, multistage switch nxn switch frommultiple stages of smaller switches, exploiting parallelism: fragment datagram into fixed length cells on entry
+    - scaling, using multiple switching planes in parallel, speedup, scaleup via parallelism
+    - Cisco CRS router: 8 switching planes in basic unit, 3-stage interconnection network, up to 100's Tb/s
+
+
+input port queuing:
+- fabric slower than input ports combined -> queueing may occur at input queues
+- queueing delay and loss due to input buffer overflow!
+- head-of-the-line (HOL) blocking: queued datagram at front of queue prevents others in queue from moving forward
+
+輸入端口排隊：
+
+- 當網絡連接速度比輸入端口速度慢時，可能導致輸入隊列的排隊現象。
+- 排隊延遲和由於輸入緩衝區溢出而導致的丟失！
+- 隊列中排隊的數據報在隊列前端阻止其他數據報前進，稱為頭部阻塞（HOL）。
+
+
+Output port queuing:
+- buffering required when datagrams arrive from fabric faster than the transmission rate
+- Datagrams can be lost due to congestion, lack of buffers
+- scheduling discipline chooses among queued datagrams for transmission
+- priority scheduling - who gets best performance, network neutrality?
+- buffering when arrival rate via switch exceeds output line speed
+- queueing delay and loss due to output buffer overflow!
+
+輸出端口排隊：
+
+- 當數據報從傳輸織理到達速度快於傳輸速率時，需要緩衝。
+- 可能由於擁塞或緩衝區不足導致數據報丟失。
+- 排程紀律從排隊的數據報中選擇要傳輸的數據報。
+- 優先級排程 - 誰獲得最佳性能，網絡中立性？
+- 當網絡交換機的到達速率超過輸出線速度時，需要進行緩衝。
+- 可能由於輸出緩衝區溢出導致的排隊延遲和丟失！
+
+
+### 計算 Buffering 
+
+[HW2-4](https://github.com/1chooo/my-swe-wiki/tree/main/computer_network/hw02#q4-3)
+
+$\frac{RTT \cdot C}{\sqrt{N}}$
+
+太多的 buffer 會造成 delay 增加，特別在家裡的 router
+- long RTTs: 在即時的 app 有很差的效能，sluggish TCP response
+- recall delay-based congestion control: keep bottleneck link just full enough but no fuller
+
+管理 buffer 的方法:
+- drop: which packet to add, drop when buffers are full, tail drop, priority drop
+- marking: which packets to mark to signal congestion, ECN (Explicit Congestion Notification), RED (Random Early Detection)
+
+FCFS (First Come First Serve) scheduling:
+- packet scheduling: 
+  - deciding which packet to send next on link:
+  - FIFO (first in first out)
+  - priority: by classification (any header fields), send packet from highest priority queue that has buffed packets
+  - round robin: by classification (any header fields), sever cyclically, repeatedly scaning, sending one complete packet from each class (if available)
+  - weighted fair queuing (WFQ): generalized Round Robin, each class gets weighted amount of service in each cycle, minimum bandwidth guarantee per class
+- FCFS: packets transmitted in order of arrival to output port
+  - FIFO (first in first out)
+
+
+Network Neutrality:
+- How an ISP (Internet Service Provider) should share/allocation its resources among its customers?
+- social, economic, political, regulatory issue
+
+
+2015年美國聯邦通信委員會（FCC）有關保護和促進開放互聯網的法令包括三條“明確、明亮的界線”規則：
+
+1. **不得封鎖（No Blocking）：** 互聯網服務提供商不得阻止合法內容、應用、服務或無害設備，但允許進行合理的網絡管理。
+
+2. **不得限速（No Throttling）：** 互聯網服務提供商不得基於互聯網內容、應用或服務的性質，或使用無害設備，而對合法互聯網流量進行損害或降級，同樣也允許進行合理的網絡管理。
+
+3. **禁止付費優先（No Paid Prioritization）：** 互聯網服務提供商不得進行付費優先處理，即不得對某些流量提供特殊的優先處理，同樣也不能進行付費的特殊流量處理。
+
+這些規則旨在確保互聯網的開放性和公平性，防止網絡提供商對互聯網內容、服務或使用者的不公平差別對待，並允許他們在合理範圍內進行網絡管理以確保網絡安全和效能。
+
+## 4-3 IP: the Internet Protocol
