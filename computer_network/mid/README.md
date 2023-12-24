@@ -1,4 +1,4 @@
-# Midterm Exam
+# Computer Network MIDTERM EXAM
 
 ## 109-2
 b. Which layer of the TCP/IP model is equivalent to the session layer and the presentation layer of the OSI model?\
