@@ -13,6 +13,7 @@
     - [Longest-Prefix Matching](#longest-prefix-matching)
     - [計算 Buffering](#計算-buffering)
   - [4-3 IP: the Internet Protocol](#4-3-ip-the-internet-protocol)
+  - [4-4 Generalized Fowarding, SDN](#4-4-generalized-fowarding-sdn)
 
 
 ## 3-1 Introduction and Transport-Layer Services
@@ -224,20 +225,23 @@ transport segment from sending to receiving host
 - Input ports: 負責 forwarding datagrams from input to output ports
 - input port queuing: 如果 datagrams 抵達速度快過魚 forward rate，就會發生 queueing delay，如果 queueing delay 太長，就會發生 packet loss
 
+![](https://i.imgur.com/qYVUiSU.png)
+
+![](https://i.imgur.com/qYVUiSU.png)
+
 ### Longest-Prefix Matching 
 
 [HW2-5](https://github.com/1chooo/my-swe-wiki/tree/main/computer_network/hw02#q5-4)
 
 找最長的去配對
 
-```
 | Destination Address Range  |  Link Interface  |
 |----------------------------|------------------|
-| 11001000 00010111 00010*** ******** |        0         |
-| 11001000 00010111 00011000 ******** |        1         |
-| 11001000 00010111 00011*** ******** |        2         |
-| otherwise |        3         |
-```
+| `11001000 00010111 00010*** ********` |        0         |
+| `11001000 00010111 00011000 ********` |        1         |
+| `11001000 00010111 00011*** ********` |        2         |
+| `otherwise` |        3         |
+
 
 - 11001000 00010111 00010110 10100001 which interface? Ans: 0
 - 11001000 00010111 00011000 10101010 which interface? Ans: 2
@@ -332,3 +336,121 @@ Network Neutrality:
 這些規則旨在確保互聯網的開放性和公平性，防止網絡提供商對互聯網內容、服務或使用者的不公平差別對待，並允許他們在合理範圍內進行網絡管理以確保網絡安全和效能。
 
 ## 4-3 IP: the Internet Protocol
+
+![](https://i.imgur.com/EjCBvuR.png)
+
+- IP: 32 bit 用來識別 host, router interface
+- interface: 跟網路相連的 host, router 的 physical connection
+- router's typically have multiple interfaces
+- host typically has one or two interfaces (e.g., wired Ethernet, wireless 802.11)
+
+`223.1.1.1` = `11011111 00000001 00000001 00000001`
+
+- subnet: 裝置與裝置間的 interface 不需經由中間路由器就能相連的裝置
+- IP address: 
+  - subnet (devices in same subnet have common high order bits)
+  - host part (low order bits)
+- isolated network
+- count number of subnets: router 之間的也算進去
+
+
+CIDR (Classless InterDomain Routing):
+`a.b.c.d/x` = `a.b.c.d` with mask of `x` bits, x 長度是隨意的
+
+DHCP (Dynamic Host Configuration Protocol): (more than IP addresses)
+- dynamically get IP address from as server
+- "plug-and-play"
+  - renew its lease on address in use
+  - allows reuse of addresses (only hold address while connected ("lease"))
+  - support for mobile users who join/leave network
+- Host broadcasts "DHCP discover" msg
+- DHCP server responds with "DHCP offer" msg
+- Host requests IP address: "DHCP request" msg
+- DHCP server sends address: "DHCP ack" msg
+- DHCP 伺服器會與路由器放置在一起，為路由器連接的所有子網路提供服務。
+
+1. DHCP discover
+2. DHCP offer
+3. DHCP request
+4. DHCP ack
+
+![](https://i.imgur.com/r3Dxggi.png)
+
+![](https://i.imgur.com/DeRRNt3.png)
+
+- 筆電會用 DHCP 來取得 IP address, DNS server
+- DHCP request 的 msg 會 encapsulated 在 UDP, IP, Ethernet
+- Ethernet frame 會 broadcast 在 LAN，皆收在 DHCP server 的 router 上
+- 隨後乙太網框架被解析為 IP，IP 被解析為 UDP，UDP 被解析為 DHCP 的訊息。
+
+
+How does network get subnet part of IP addr?
+- gets allocated portion of its provider ISP's address space
+- ISP can then allocate its address space in 8 blocks
+
+如果有原本的 organization 離開了原本的 ISP 的話，原本的 ISP 就會把 IP address block 分給其他的 ISP
+
+![](https://i.imgur.com/JU13HGn.png)
+
+[HW2-6](https://github.com/1chooo/my-swe-wiki/tree/main/computer_network/hw02#q6-4-5)
+
+
+NAT (Network Address Translation):
+
+- all devices in local network share just one as far as outside world is concerned
+- 每個 local network 有 32-bit address in a private address space
+  - 只有一個 IP address 能被 ISP 看到
+  - 可以在不用對外聯繫的狀態下更改本地主機的 address
+  - 可以不用更改本地裝置的 address，更換 ISP
+  - 內網的裝置部會被外網看到，但是可以連到外網
+
+NAT（Network Address Translation，網絡地址轉換）路由器的實現需要在不引起注意的情況下進行以下操作：
+
+- **對於外發數據報：** 將每個外發數據報的（源 IP 地址，端口 #）替換為（NAT IP 地址，新的端口 #）。遠程客戶端/服務器將使用（NAT IP 地址，新的端口 #）作為目標地址進行回應。
+
+- **記錄 NAT 轉換表：** 對於每一個（源 IP 地址，端口 #）到（NAT IP 地址，新的端口 #）的轉換對，記錄在NAT轉換表中，以便在需要時進行對應的轉換。
+
+- **對於入來的數據報：** 將每個入來數據報中目的地字段的（NAT IP 地址，新的端口 #）替換為 NAT 表中相應的（源 IP 地址，端口 #）。
+
+1. host sends datagram to `128.119.40.186, 80`
+2. S: `10.0.0.1, 3345`; D: `128.119.40.186, 80`
+3. S: `138.76.29.7, 5001`; D: `128.119.40.186, 80`
+4. S: `128.119.40.186, 80`; D: `138.76.29.7, 5001` (reply arrives, destination)
+5. S: `128.119.40.186, 80`; D: `10.0.0.1, 3345`
+
+
+[HW2-7](https://github.com/1chooo/my-swe-wiki/tree/main/computer_network/hw02#q7-5)
+
+**IPv6**
+
+- 32-bit 的 IPv4 快分配完了
+- 固定的 40-byte 的 header，加速了 forwarding
+- 可以讓其他網路層做流量處理
+
+![](https://i.imgur.com/i6xR3SV.png)
+
+- flow label : 同筆資料給予相同的label，可用來做流量控制及統計
+
+
+**與IPv4的比較:**
+
+- 由於沒有 checksum，所以可以加速處理資料
+- no fragmentation/reassembly
+- no options
+
+
+**tunneling:**
+
+隧道技術（Tunneling）是指在不同網路協議之間傳輸數據的一種方法。在這種情況下，IPv6 的數據報被封裝在 IPv4 的數據報中，作為其有效載荷（payload），這就是所謂的“封包中的封包”。
+
+具體來說，當IPv6數據報需要在IPv4網絡中傳輸時，它被放置在IPv4數據報的內部，並在IPv4網絡中進行路由。當這個IPv4數據報到達目的地時，其中的IPv6數據報被提取並處理，就好像它直接在IPv6網絡中傳輸一樣。
+
+隧道技術在其他情境中也被廣泛應用，例如在4G/5G等無線通信中，用於在不同協議或網絡之間傳輸數據，讓不同類型的網絡能夠互相通信和運行。
+
+IPv6 的 datagram 在 IPv4 的 datagram 裡面
+
+![](https://i.imgur.com/latEhq6.png)
+
+
+## 4-4 Generalized Fowarding, SDN
+
