@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go 借書系統</title>
+    <link rel="stylesheet" type="text/css" href="./static/styles.css">
+</head>
+<body>
+    <h1>借書系統</h1>
+
+    <h2>書本列表</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Action</th> <!-- 新增刪除按鈕列 -->
+            </tr>
+        </thead>
+        <tbody id="bookList"></tbody>
+    </table>
+
+    <h2>新增書本</h2>
+    <form id="addBookForm">
+        <label for="id">ID:</label>
+        <input type="text" id="id" name="id" required>
+
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required>
+
+        <label for="author">Author:</label>
+        <input type="text" id="author" name="author" required>
+
+        <button type="submit">新增書本</button>
+    </form>
+
+    <script src="./static/scripts.js"></script>
+</body>
+</html>
