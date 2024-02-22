@@ -70,5 +70,11 @@
 
 因為有些企業的內容未必公開，因此我們需要一個儲存庫來儲存企業的內容，我們可以在這個 AWS s3 中建立 Bucket。在這個工作坊中我們用來當作抓取圖片的儲存庫。
 
+### 4.5. 建立 LINE BOT 名片
+
+最後我們撰寫好 Lambda function 並且建立好 Amazon API Gateway 以及 AWS s3 後，我們回去 LINE BOT 拿到 ACCESS TOKEN 和 SECRET_TOKEN，並且設定好 Webhook URL 後，我們就可以開始使用我們的 LINE BOT 名片了。
+
 ## 5. 心得
+
+這次的工作坊是個很新的體驗，讓我們體驗了完整的產品開發體驗，並且還有不同的團隊角色參與其中，像是 Product Manager, Marketing, Software Enigneer, Cloud Engineer 的角色，而我最喜歡的是 Software Engineer 角色，因為可以按照自己的想法把目標完成，很高興能參與 AWS Educate 舉辦的工作坊，讓我了解到雲端服務的優點，並且讓我體驗到產品開發的流程，這次的工作坊讓我學到了很多。
 
