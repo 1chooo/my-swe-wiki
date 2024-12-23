@@ -26,7 +26,7 @@ class MapPaths {
   ArrayList<Integer> ansList = new ArrayList<>();
   int ans;
 
-  public void getNum () {
+  public void getNum() {
     String temp = myObj.nextLine();
     String[] size = temp.split(" ");
     int down = Integer.parseInt(size[0]) - 1;
@@ -37,7 +37,7 @@ class MapPaths {
     long temp3 = 1;
 
     if (right == 0 && down == 0) {
-//      System.out.println(0);
+      // System.out.println(0);
       ansList.add(0);
     } else {
       for (int i = total; i > 1; i--) {
@@ -50,12 +50,13 @@ class MapPaths {
         temp3 *= i;
       }
 
-//      System.out.println(temp1 / (temp2 * temp3));
+      // System.out.println(temp1 / (temp2 * temp3));
       ans = (int) (temp1 / (temp2 * temp3));
       ansList.add(ans);
     }
   }
-  public void getAns () {
+
+  public void getAns() {
     int len = 0;
     len = ansList.size();
     for (int i = 0; i < len; i++) {
