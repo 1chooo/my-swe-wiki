@@ -1,1 +1,0 @@
-g++ -Iinclude src/*.cpp -o bin/main && ./bin/main

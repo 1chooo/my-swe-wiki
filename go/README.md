@@ -1,3 +1,0 @@
-# GO Language
-
-###### Tags: `golang`

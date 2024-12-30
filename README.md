@@ -1,6 +1,6 @@
 # My SWE WIKI
 
-https://www.overleaf.com/latex/templates/algorithmtemplate/pdzrcnxrsyhs
+Please visit https://github.com/1chooo/my-swe-wiki/tree/archive for the archived version of this repository. (We will no longer maintain this repository.)
 
 ### License
 Released under [MIT](./LICENSE) by [@1chooo](https://github.com/1chooo).

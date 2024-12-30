@@ -1,1 +1,0 @@
-https://github.com/NikczemnyOkularnik/CS-University
